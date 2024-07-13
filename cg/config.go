@@ -2,7 +2,6 @@ package cg
 
 import (
 	"context"
-	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -20,8 +19,8 @@ var (
 )
 
 func LoadConfigs() error {
+	// The only way i found to
 	if _, err := os.Stat(".env"); os.IsNotExist(err) {
-		log.Println("Warning: .env file not found, proceeding with environment variables set in the system")
 		return err
 	}
 	err := godotenv.Load(".env")
