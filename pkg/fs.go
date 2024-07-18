@@ -5,21 +5,32 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"golang.org/x/sync/errgroup"
 )
 
-func WalkThroughDir(path string, fn func(context.Context, string) error) error {
+func WalkThroughDir(path string, fn func(string) error) error {
+	// Better than using normal go funcs 'cause treats errors
+	errg, _ := errgroup.WithContext(context.Background())
+
 	err := filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
 		if !info.IsDir() {
-			if err := fn(context.Background(), path); err != nil {
+			errg.Go(func() error {
+				if strings.Contains(path, ".git") {
+					return nil
+				}
+				err = fn(path)
 				return err
-			}
+			})
 		}
 		return nil
 	})
 	if err != nil {
+		return err
+	}
+
+	if err := errg.Wait(); err != nil {
 		return err
 	}
 	return nil

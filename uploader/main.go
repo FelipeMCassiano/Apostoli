@@ -16,7 +16,7 @@ func main() {
 	}
 
 	router := http.NewServeMux()
-	router.HandleFunc("POST /deploy", deploy.Deploy)
+	router.HandleFunc("POST /deploy", deploy.Deploy())
 
 	server := http.Server{
 		Addr:    ":8080",

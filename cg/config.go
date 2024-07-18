@@ -48,7 +48,10 @@ func loadAWSConfig() (*aws.Config, error) {
 }
 
 func createNewS3Client(cfg *aws.Config) *s3.Client {
-	return s3.NewFromConfig(*cfg)
+	return s3.NewFromConfig(*cfg, func(o *s3.Options) {
+		o.UsePathStyle = true
+		o.BaseEndpoint = aws.String(os.Getenv("AWS_ENDPOINT"))
+	})
 }
 
 func createNewS3Uploader(*s3.Client) *manager.Uploader {

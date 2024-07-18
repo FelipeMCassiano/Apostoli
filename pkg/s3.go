@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"log"
 	"os"
 
 	"github.com/FelipeMCassiano/Apostoli/cg"
@@ -11,14 +12,21 @@ import (
 
 // TODO: download from s3
 
-func UploadFile(ctx context.Context, key string) error {
-	_, err := cg.S3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(os.Getenv("AWS_BUCKET")),
-		Key:    aws.String(key),
-		Body:   os.Stdin,
-	})
+func UploadFile(key string) error {
+	fil, err := os.Open(key)
 	if err != nil {
+		log.Println("open err:", err.Error())
 		return err
 	}
+	out, err := cg.S3Uploader.Upload(context.Background(), &s3.PutObjectInput{
+		Bucket: aws.String(os.Getenv("AWS_BUCKET")),
+		Key:    aws.String(key),
+		Body:   fil,
+	})
+	if err != nil {
+		log.Println("s3 error:", err.Error())
+		return err
+	}
+	log.Println(out)
 	return nil
 }
