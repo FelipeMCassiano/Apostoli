@@ -5,3 +5,11 @@ services:
         hostname: redis
         ports:
             - 6379:6379
+    deployer:
+        build: ./deployer/Dockerfile
+        hostname: deployer
+    uploader:
+        build: ./uploader/Dockerfile
+        hostname: uploader
+        ports:
+          - 8080:8080
