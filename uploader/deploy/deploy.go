@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/FelipeMCassiano/Apostoli/cg"
 	"github.com/FelipeMCassiano/Apostoli/pkg"
 	"github.com/google/uuid"
 )
@@ -16,8 +17,6 @@ type deployRequest struct {
 type deployResponse struct {
 	DeployId string `json:"deployid"`
 }
-
-// TODO: upload into a s3, push to redis
 
 func Deploy() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +48,10 @@ func Deploy() func(w http.ResponseWriter, r *http.Request) {
 		reponse := deployResponse{
 			DeployId: dId.String(),
 		}
+
+		rctx := r.Context()
+
+		cg.RedisClient.LPush(rctx, "builds", dId.String(), "uploading")
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
