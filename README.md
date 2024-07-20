@@ -1,2 +1,2 @@
 # Apostoli
-## Inspired by [shipthing](https://github.com/NicolasLopes7/shipthing)
+## Vercel-like project using localstack
