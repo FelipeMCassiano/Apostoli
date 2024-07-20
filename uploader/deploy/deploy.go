@@ -3,7 +3,6 @@ package deploy
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -19,13 +18,6 @@ type deployResponse struct {
 }
 
 // TODO: upload into a s3, push to redis
-const (
-	a = iota
-	b
-	c
-	d
-	e
-)
 
 func Deploy() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +28,6 @@ func Deploy() func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		log.Println(a)
 
 		tDir := os.TempDir()
 
@@ -48,21 +39,16 @@ func Deploy() func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		log.Println(b)
 		defer pkg.RemoveLocalRepo(path)
-
-		log.Println(c)
 
 		if err := pkg.WalkThroughDir(path, pkg.UploadFile); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		log.Println(d)
 		reponse := deployResponse{
 			DeployId: dId.String(),
 		}
-		log.Println(e)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
